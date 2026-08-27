@@ -8,7 +8,7 @@
 
 This repo is where I practice reading raw network traffic with Wireshark and turning what I find into actual security understanding — starting from DNS, TCP, HTTP, and TLS packets, and ending with cloud security controls.
 
-Captures were taken across two environments: Kali Linux and Windows 11.
+Captures were taken from kali Linux v 4.6.6
 
 ## Projects
 
@@ -60,7 +60,7 @@ Captures were taken across two environments: Kali Linux and Windows 11.
 ## Tools I Used
 
 - **Wireshark** — packet capture and protocol analysis
-- **Kali Linux & Windows 11** — capture environments
+- **Kali Linux** — capture environments
 - **Browser / curl / ping** — generating traffic to capture
 - **AWS & Azure concepts** — VPC Flow Logs, Security Groups, NSGs, Sentinel (for Project 2's mapping)
 
@@ -71,3 +71,6 @@ I put this together to build real, hands-on comfort with Wireshark instead of ju
 ## License
 
 This project is licensed under the [MIT License](LICENSE).
+
+**COURTESY** 
+Mr. Micheal Emeka (M.E.Ns) at BoycodeAfrica Cohort 5.0
