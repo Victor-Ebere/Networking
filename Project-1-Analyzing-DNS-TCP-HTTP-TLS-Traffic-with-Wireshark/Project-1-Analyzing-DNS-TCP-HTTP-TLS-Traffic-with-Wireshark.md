@@ -1,8 +1,5 @@
 **Analyzing DNS, TCP, HTTP and TLS Traffic with Wireshark**
-<<<<<<< HEAD
-=======
-------------------------------------------------------------
->>>>>>> 70dc51dae0dbbe977360642162e6c970d50259a6
+
 
 **Introduction:**
 For this project, I captured live traffic with Wireshark and looked at four protocols: DNS, TCP, HTTP, and TLS. I'm not going exercise by exercise here, I'll just summarise what I found for each protocol, then explain how they all work together.
@@ -14,33 +11,20 @@ Captures for both session will be uploaded as capture.pcap, output2.pcap, respec
 
 My capture file had 2,583 packets in total. Once I filtered with dns, only 53 packets remained, about 2.1% of everything. My DNS and TCP examples came from a client at 10.47.48.26. My HTTP and TLS examples came from a different session, with client IP 10.233.180.26.
 
-<<<<<<< HEAD
-Parameter	Value
-----------------------------------------------------------------
-Analysis tool	Wireshark v4.x
-----------------------------------------------------------------
-Capture file   	capture.pcap
-----------------------------------------------------------------
-Total packets captured	2,583
-----------------------------------------------------------------
-Primary IP                   10.47.48.26
-----------------------------------------------------------------
-Secondary IP 		    10.233.180.26
-=======
+
 **Parameter	Value**
 
-Analysis tool: Wireshark v4.x
+* Analysis tool	Wireshark v4.x
 
-Capture file:  	capture.pcap | output2.pcap
+* Capture file   	capture.pcap
 
-Total packets captured:	2,583
+* Total packets captured	2,583
 
-Primary IP:                  10.47.48.26
+* Primary IP                   10.47.48.26
 
-Secondary IP:	    10.233.180.26
->>>>>>> 70dc51dae0dbbe977360642162e6c970d50259a6
+* Secondary IP 		    10.233.180.26
 
-
+*
 **DNS TRAFFIC**
 I filtered with dns and picked one query/response pair to check closely: a lookup for fonts.gstatic.com (Frame 168 query, Frame 205 response). Both frames matched on transaction ID 0xdcdb, and the response came back NOERROR, resolving to 216.58.223.195 in about 42.97 ms. I also saw www.google.com.ng resolve fine, and clients4.google.com come back as a CNAME to clients.l.google.com.
 
