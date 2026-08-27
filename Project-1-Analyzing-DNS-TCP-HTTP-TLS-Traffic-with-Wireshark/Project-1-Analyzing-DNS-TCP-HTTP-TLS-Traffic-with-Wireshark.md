@@ -1,0 +1,77 @@
+**Analyzing DNS, TCP, HTTP and TLS Traffic with Wireshark**
+<<<<<<< HEAD
+=======
+------------------------------------------------------------
+>>>>>>> 70dc51dae0dbbe977360642162e6c970d50259a6
+
+**Introduction:**
+For this project, I captured live traffic with Wireshark and looked at four protocols: DNS, TCP, HTTP, and TLS. I'm not going exercise by exercise here, I'll just summarise what I found for each protocol, then explain how they all work together.
+
+Screenshots are not in this file. I kept them separate in an images/ folder (images/dns_analysis/, images/tcp_analysis/, images/http_analysis/, images/tls_analysis/) so this write-up stays easy to read on its own.
+Captures for both session will be uploaded as capture.pcap, output2.pcap, respectively.
+
+**Capture Overview:**
+
+My capture file had 2,583 packets in total. Once I filtered with dns, only 53 packets remained, about 2.1% of everything. My DNS and TCP examples came from a client at 10.47.48.26. My HTTP and TLS examples came from a different session, with client IP 10.233.180.26.
+
+<<<<<<< HEAD
+Parameter	Value
+----------------------------------------------------------------
+Analysis tool	Wireshark v4.x
+----------------------------------------------------------------
+Capture file   	capture.pcap
+----------------------------------------------------------------
+Total packets captured	2,583
+----------------------------------------------------------------
+Primary IP                   10.47.48.26
+----------------------------------------------------------------
+Secondary IP 		    10.233.180.26
+=======
+**Parameter	Value**
+
+Analysis tool: Wireshark v4.x
+
+Capture file:  	capture.pcap | output2.pcap
+
+Total packets captured:	2,583
+
+Primary IP:                  10.47.48.26
+
+Secondary IP:	    10.233.180.26
+>>>>>>> 70dc51dae0dbbe977360642162e6c970d50259a6
+
+
+**DNS TRAFFIC**
+I filtered with dns and picked one query/response pair to check closely: a lookup for fonts.gstatic.com (Frame 168 query, Frame 205 response). Both frames matched on transaction ID 0xdcdb, and the response came back NOERROR, resolving to 216.58.223.195 in about 42.97 ms. I also saw www.google.com.ng resolve fine, and clients4.google.com come back as a CNAME to clients.l.google.com.
+
+I did notice three ICMP "Port Unreachable" messages sitting among the DNS traffic. That's not really a fault, it just means a response arrived after the socket that sent the query had already closed. Nothing to worry about unless it starts happening a lot more often.
+
+**TCP TRAFFIC**
+I filtered with tcp and looked at the connection from 10.47.48.26:38560 to YouTube's autosuggest server at 142.251.39.206:443. The three-way handshake was clean:
+
+Frame 707: client sends SYN
+Frame 724: server replies SYN-ACK
+Frame 725: client sends the final ACK
+
+After that, the connection moved straight into TLS 1.2, so when I followed the TCP stream, all I got was ciphertext, which is expected once encryption kicks in.
+
+**HTTP TRAFFIC**
+I filtered with http and found a plain-text request from 10.233.180.26 to connectivitycheck.gstatic.com. This wasn't a page I opened myself, it's the kind of background check browsers and phones run to know if they're behind a login page (a captive portal) or have real internet access.
+
+The request (Frame 1994) was GET /generate_204, and the response (Frame 2012) came back HTTP/1.1 204 No Content. A 204 basically means "you're good, nothing is blocking you." If a captive portal had been in the way, I'd have gotten a 200 or a 302 redirect instead.
+
+**TLS TRAFFIC**
+I filtered with tls and checked a session to a WhatsApp CDN server (57.144.39.32, SNI media-los4-1.cdn.whatsapp.net). The Client Hello (Frame 618) offered TLS 1.3 and TLS 1.2, plus a X25519MLKEM768 key share, which is a hybrid key exchange built to resist future quantum computers. The Server Hello (Frame 995) picked TLS 1.3, the TLS_AES_128_GCM_SHA256 cipher, and confirmed that same key share.
+
+I couldn't see the server's certificate anywhere, and that's actually correct behaviour, not a mistake on my part. TLS 1.3 encrypts the certificate, unlike TLS 1.2 which sends it in plain text. Everything after the handshake was encrypted Application Data, which is exactly how it should look.
+
+**HOW THEY COMMUNICATE/INTERACT**
+
+Putting it all together, this is basically the order things happen in:
+
+1. DNS turns the hostname into an IP address.
+2. TCP uses that IP to open a reliable connection (the three-way handshake).
+3. TLS (if it's HTTPS) encrypts that connection before any real data moves.
+4. HTTP is the actual request/response, either sent plainly or wrapped inside TLS.
+
+So the flow is: DNS → TCP → TLS → HTTP/HTTPS. What stood out to me most is how much is happening quietly in the background, DNS lookups, connectivity checks, handshakes, before you even see anything load on your screen.
